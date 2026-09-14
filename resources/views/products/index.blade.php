@@ -15,6 +15,12 @@
 
     <a href="{{ route('products.create') }}">Add Product</a>
 
+    <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+        @csrf
+
+        <button type="submit">Logout</button>
+    </form>
+
     <br><br>
 
     <table border="1" cellpadding="8">
