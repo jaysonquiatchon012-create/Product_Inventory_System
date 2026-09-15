@@ -15,6 +15,25 @@
 
     <a href="{{ route('products.create') }}">Add Product</a>
 
+            <br><br>
+
+        <form action="{{ route('products.index') }}" method="GET">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search by Product Code or Name"
+                value="{{ $search ?? '' }}"
+            >
+
+            <br><br>
+
+        </form>
+
+        <br>
+
+        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+
     <form action="{{ route('logout') }}" method="POST" style="display:inline;">
         @csrf
 
@@ -57,6 +76,28 @@
         @endforeach
 
     </table>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+
+        searchInput.addEventListener('input', function () {
+            const search = this.value;
+
+            fetch("{{ route('products.index') }}?search=" + encodeURIComponent(search))
+                .then(response => response.text())
+                .then(data => {
+                    const parser = new DOMParser();
+                    const html = parser.parseFromString(data, 'text/html');
+
+                    const newTable = html.querySelector('table');
+                    const currentTable = document.querySelector('table');
+
+                    if (newTable && currentTable) {
+                        currentTable.innerHTML = newTable.innerHTML;
+                    }
+                });
+        });
+    </script>
 
 </body>
 </html>
