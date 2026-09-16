@@ -13,15 +13,21 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
+        $category = $request->category;
 
         $products = Product::with('category')
             ->when($search, function ($query) use ($search) {
                 $query->where('product_code', 'like', "%{$search}%")
                     ->orWhere('name', 'like', "%{$search}%");
             })
+            ->when($category, function ($query) use ($category) {
+                $query->where('category_id', $category);
+            })
             ->get();
 
-        return view('products.index', compact('products', 'search'));
+        $categories = \App\Models\Category::all();
+
+        return view('products.index', compact('products', 'search', 'categories', 'category'));
     }
 
     /**

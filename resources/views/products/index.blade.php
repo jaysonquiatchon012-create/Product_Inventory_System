@@ -15,30 +15,35 @@
 
     <a href="{{ route('products.create') }}">Add Product</a>
 
-            <br><br>
-
-        <form action="{{ route('products.index') }}" method="GET">
-
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="Search by Product Code or Name"
-                value="{{ $search ?? '' }}"
-            >
-
-            <br><br>
-
-        </form>
-
-        <br>
-
-        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-
     <form action="{{ route('logout') }}" method="POST" style="display:inline;">
         @csrf
 
         <button type="submit">Logout</button>
     </form>
+
+    <br><br>
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search by Product Code or Name"
+        value="{{ $search ?? '' }}"
+    >
+
+    <br><br>
+
+    <label for="categoryFilter">Category:</label>
+
+    <select id="categoryFilter">
+        <option value="">All Categories</option>
+
+        @foreach ($categories as $categoryItem)
+            <option value="{{ $categoryItem->id }}"
+                {{ ($category ?? '') == $categoryItem->id ? 'selected' : '' }}>
+                {{ $categoryItem->name }}
+            </option>
+        @endforeach
+    </select>
 
     <br><br>
 
@@ -67,8 +72,10 @@
                         @csrf
                         @method('DELETE')
 
-                        <button 
-                            type="submit" onclick="return confirm('Are you sure you want to delete this product?')">Delete
+                        <button
+                            type="submit"
+                            onclick="return confirm('Are you sure you want to delete this product?')">
+                            Delete
                         </button>
                     </form>
                 </td>
@@ -79,11 +86,18 @@
 
     <script>
         const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
 
-        searchInput.addEventListener('input', function () {
-            const search = this.value;
+        function filterProducts() {
+            const search = searchInput.value;
+            const category = categoryFilter.value;
 
-            fetch("{{ route('products.index') }}?search=" + encodeURIComponent(search))
+            fetch(
+                "{{ route('products.index') }}?search="
+                + encodeURIComponent(search)
+                + "&category="
+                + encodeURIComponent(category)
+            )
                 .then(response => response.text())
                 .then(data => {
                     const parser = new DOMParser();
@@ -96,7 +110,10 @@
                         currentTable.innerHTML = newTable.innerHTML;
                     }
                 });
-        });
+        }
+
+        searchInput.addEventListener('input', filterProducts);
+        categoryFilter.addEventListener('change', filterProducts);
     </script>
 
 </body>
