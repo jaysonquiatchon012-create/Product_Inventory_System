@@ -2,10 +2,35 @@
 <html>
 <head>
     <title>Product Inventory</title>
+    <style>
+        nav svg {
+            width: 16px;
+            height: 16px;
+        }
+    </style>
 </head>
 <body>
 
     <h1>Product Inventory</h1>
+
+    <div>
+        <div>
+            <h3>Total Products</h3>
+            <p>{{ $totalProducts }}</p>
+        </div>
+
+        <div>
+            <h3>Total Categories</h3>
+            <p>{{ $totalCategories }}</p>
+        </div>
+
+        <div>
+            <h3>Total Stock</h3>
+            <p>{{ $totalStock }}</p>
+        </div>
+    </div>
+
+    <br>
 
     @if(session('success'))
         <p style="color: green;">
@@ -54,6 +79,7 @@
             <th>Price</th>
             <th>Quantity</th>
             <th>Category</th>
+            <th>Stock Status</th>
             <th>Action</th>
         </tr>
 
@@ -64,6 +90,7 @@
                 <td>₱{{ $product->price }}</td>
                 <td>{{ $product->quantity }}</td>
                 <td>{{ $product->category->name }}</td>
+                <td>{{ $product->stockStatus }}</td>
 
                 <td>
                     <a href="{{ route('products.edit', $product->id) }}">Edit</a>
@@ -83,6 +110,10 @@
         @endforeach
 
     </table>
+
+    <br>
+
+        {{ $products->links() }}
 
     <script>
         const searchInput = document.getElementById('searchInput');

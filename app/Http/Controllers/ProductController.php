@@ -23,11 +23,35 @@ class ProductController extends Controller
             ->when($category, function ($query) use ($category) {
                 $query->where('category_id', $category);
             })
-            ->get();
+            ->paginate(5);
 
         $categories = \App\Models\Category::all();
 
-        return view('products.index', compact('products', 'search', 'categories', 'category'));
+        // Stock Status
+        $products->each(function ($product) {
+            if ($product->quantity == 0) {
+                $product->stockStatus = 'Out of Stock';
+            } elseif ($product->quantity <= 10) {
+                $product->stockStatus = 'Low Stock';
+            } else {
+                $product->stockStatus = 'In Stock';
+            }
+        });
+
+        // Dashboard Statistics
+        $totalProducts = Product::count();
+        $totalCategories = \App\Models\Category::count();
+        $totalStock = Product::sum('quantity');
+
+        return view('products.index', compact(
+            'products',
+            'search',
+            'categories',
+            'category',
+            'totalProducts',
+            'totalCategories',
+            'totalStock'
+        ));
     }
 
     /**
@@ -103,7 +127,7 @@ class ProductController extends Controller
 
         return redirect()->route('products.index')
             ->with('success', 'Product updated successfully.');
-        }
+    }
 
     /**
      * Remove the specified resource from storage.
