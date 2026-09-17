@@ -36,12 +36,33 @@
         <label>Quantity:</label><br>
         <input type="number" name="quantity" value="{{ $product->quantity }}"><br><br>
 
+        <label>Minimum Stock Level:</label><br>
+        <input
+            type="number"
+            name="minimum_stock"
+            value="{{ $product->minimum_stock }}"
+        ><br><br>
+
         <label>Category:</label><br>
         <select name="category_id">
             @foreach ($categories as $category)
                 <option value="{{ $category->id }}"
                     {{ $product->category_id == $category->id ? 'selected' : '' }}>
                     {{ $category->name }}
+                </option>
+            @endforeach
+        </select>
+
+        <br><br>
+
+        <label>Supplier:</label><br>
+        <select name="supplier_id">
+            <option value="">Select Supplier</option>
+
+            @foreach ($suppliers as $supplier)
+                <option value="{{ $supplier->id }}"
+                    {{ $product->suppliers->contains($supplier->id) ? 'selected' : '' }}>
+                    {{ $supplier->name }}
                 </option>
             @endforeach
         </select>

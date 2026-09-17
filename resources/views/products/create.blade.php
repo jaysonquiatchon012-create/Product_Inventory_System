@@ -35,11 +35,27 @@
         <label>Quantity:</label><br>
         <input type="number" name="quantity"><br><br>
 
+        <label>Minimum Stock Level:</label><br>
+        <input type="number" name="minimum_stock" value="10"><br><br>
+
         <label>Category:</label><br>
         <select name="category_id">
             @foreach ($categories as $category)
                 <option value="{{ $category->id }}">
                     {{ $category->name }}
+                </option>
+            @endforeach
+        </select>
+
+        <br><br>
+
+        <label>Supplier:</label><br>
+        <select name="supplier_id">
+            <option value="">Select Supplier</option>
+
+            @foreach ($suppliers as $supplier)
+                <option value="{{ $supplier->id }}">
+                    {{ $supplier->name }}
                 </option>
             @endforeach
         </select>

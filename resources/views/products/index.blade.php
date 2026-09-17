@@ -38,6 +38,26 @@
         </p>
     @endif
 
+    @if ($lowStockProducts->count() > 0)
+        <div style="border: 1px solid orange; padding: 10px; margin-bottom: 20px;">
+
+            <h3 style="color: orange;">
+                Low Stock Alert
+            </h3>
+
+            <ul>
+                @foreach ($lowStockProducts as $lowStockProduct)
+                    <li>
+                        <strong>{{ $lowStockProduct->name }}</strong>
+                        — Stock: {{ $lowStockProduct->quantity }}
+                        — Minimum: {{ $lowStockProduct->minimum_stock }}
+                    </li>
+                @endforeach
+            </ul>
+
+        </div>
+    @endif
+
     <a href="{{ route('products.create') }}">Add Product</a>
 
     <form action="{{ route('logout') }}" method="POST" style="display:inline;">
@@ -78,8 +98,10 @@
             <th>Name</th>
             <th>Price</th>
             <th>Quantity</th>
+            <th>Minimum Stock</th>
             <th>Category</th>
             <th>Stock Status</th>
+            <th>Supplier</th>
             <th>Action</th>
         </tr>
 
@@ -89,13 +111,28 @@
                 <td>{{ $product->name }}</td>
                 <td>₱{{ $product->price }}</td>
                 <td>{{ $product->quantity }}</td>
+                <td>{{ $product->minimum_stock }}</td>
                 <td>{{ $product->category->name }}</td>
                 <td>{{ $product->stockStatus }}</td>
 
                 <td>
-                    <a href="{{ route('products.edit', $product->id) }}">Edit</a>
+                    @foreach ($product->suppliers as $supplier)
+                        {{ $supplier->name }}
+                    @endforeach
+                </td>
 
-                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
+
+                <td>
+                    <a href="{{ route('products.show', $product->id) }}">
+                            View
+                        </a>
+                        &nbsp;
+
+                        <a href="{{ route('products.edit', $product->id) }}">
+                            Edit
+                        </a>
+
+                        <form action="{{ route('products.destroy', $product->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
 

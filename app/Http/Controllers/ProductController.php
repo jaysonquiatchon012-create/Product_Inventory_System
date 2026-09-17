@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Supplier;
 
 class ProductController extends Controller
 {
@@ -31,7 +32,7 @@ class ProductController extends Controller
         $products->each(function ($product) {
             if ($product->quantity == 0) {
                 $product->stockStatus = 'Out of Stock';
-            } elseif ($product->quantity <= 10) {
+            } elseif ($product->quantity <= $product->minimum_stock) {
                 $product->stockStatus = 'Low Stock';
             } else {
                 $product->stockStatus = 'In Stock';
@@ -43,6 +44,10 @@ class ProductController extends Controller
         $totalCategories = \App\Models\Category::count();
         $totalStock = Product::sum('quantity');
 
+        $lowStockProducts = Product::where('quantity', '>', 0)
+            ->whereColumn('quantity', '<=', 'minimum_stock')
+            ->get();
+
         return view('products.index', compact(
             'products',
             'search',
@@ -50,7 +55,8 @@ class ProductController extends Controller
             'category',
             'totalProducts',
             'totalCategories',
-            'totalStock'
+            'totalStock',
+            'lowStockProducts'
         ));
     }
 
@@ -60,8 +66,9 @@ class ProductController extends Controller
     public function create()
     {
         $categories = \App\Models\Category::all();
+        $suppliers = \App\Models\Supplier::all();
 
-        return view('products.create', compact('categories'));
+        return view('products.create', compact('categories', 'suppliers'));
     }
 
     /**
@@ -74,17 +81,22 @@ class ProductController extends Controller
             'name' => 'required',
             'price' => 'required|numeric',
             'quantity' => 'required|integer',
+            'minimum_stock' => 'required|integer',
             'category_id' => 'required',
+            'supplier_id' => 'required',
         ]);
 
-        Product::create([
+        $product = Product::create([
             'product_code' => $request->product_code,
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
             'quantity' => $request->quantity,
+            'minimum_stock' => $request->minimum_stock,
             'category_id' => $request->category_id,
         ]);
+
+        $product->suppliers()->attach($request->supplier_id);
 
         return redirect()->route('products.index')
             ->with('success', 'Product added successfully.');
@@ -95,7 +107,9 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $product = Product::with(['category', 'suppliers'])->findOrFail($id);
+
+        return view('products.show', compact('product'));
     }
 
     /**
@@ -105,8 +119,9 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $categories = \App\Models\Category::all();
+        $suppliers = \App\Models\Supplier::all();
 
-        return view('products.edit', compact('product', 'categories'));
+        return view('products.edit', compact('product', 'categories', 'suppliers'));
     }
 
     /**
@@ -116,14 +131,27 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
+        $request->validate([
+             'product_code' => 'required',
+            'name' => 'required',
+            'price' => 'required|numeric',
+            'quantity' => 'required|integer',
+            'minimum_stock' => 'required|integer',
+            'category_id' => 'required',
+            'supplier_id' => 'required',
+        ]);
+
         $product->update([
             'product_code' => $request->product_code,
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
             'quantity' => $request->quantity,
+            'minimum_stock' => $request->minimum_stock,
             'category_id' => $request->category_id,
         ]);
+
+        $product->suppliers()->sync([$request->supplier_id]);
 
         return redirect()->route('products.index')
             ->with('success', 'Product updated successfully.');
