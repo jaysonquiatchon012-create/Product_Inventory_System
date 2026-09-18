@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\InventoryTransactionController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 
@@ -27,4 +28,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/inventory-transactions', [InventoryTransactionController::class, 'store'])
         ->name('inventory-transactions.store');
+
+    Route::get('/inventory-transactions', [InventoryTransactionController::class, 'index'])
+        ->name('inventory-transactions.index');
+    
+    Route::get('/reports', [ReportController::class, 'index']) 
+        ->name('reports.index');
 });

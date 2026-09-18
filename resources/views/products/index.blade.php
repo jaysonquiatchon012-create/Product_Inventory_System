@@ -60,6 +60,20 @@
 
     <a href="{{ route('products.create') }}">Add Product</a>
 
+    <a href="{{ route('inventory-transactions.create') }}">
+        Stock In / Stock Out
+    </a>
+
+    <a href="{{ route('inventory-transactions.index') }}">
+        Inventory History
+    </a>
+
+    <br>
+
+    <a href="{{ route('reports.index') }}">
+        Reports
+    </a>
+
     <form action="{{ route('logout') }}" method="POST" style="display:inline;">
         @csrf
 
