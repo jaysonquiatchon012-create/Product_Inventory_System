@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\InventoryTransactionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AccountController;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 
@@ -34,4 +35,19 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/reports', [ReportController::class, 'index']) 
         ->name('reports.index');
+
+    Route::get('/account', [AccountController::class, 'index'])
+        ->name('account.index');
+
+    Route::get('/account/edit', [AccountController::class, 'edit'])
+        ->name('account.edit');
+
+    Route::put('/account', [AccountController::class, 'update'])
+        ->name('account.update');
+
+    Route::get('/account/password', [AccountController::class, 'password'])
+        ->name('account.password');
+
+    Route::put('/account/password', [AccountController::class, 'updatePassword'])
+        ->name('account.update-password');
 });

@@ -74,6 +74,12 @@
         Reports
     </a>
 
+    <a href="{{ route('account.index') }}">
+        My Account
+    </a>
+
+    &nbsp;
+
     <form action="{{ route('logout') }}" method="POST" style="display:inline;">
         @csrf
 
